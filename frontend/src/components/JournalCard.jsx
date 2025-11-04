@@ -8,7 +8,7 @@ const JournalCard = ({ journal }) => (
       {journal.visibility === "SPECIFIC" && <span>👥 Shared</span>}
       {journal.visibility === "PRIVATE" && <span>🔒 Private</span>}
       {journal.visibility === "PUBLIC" && <span>🌍 Public</span>}
-      <span>— by {journal.author_name}</span>
+      <span>— by {journal.author?.username || "Unknown"}</span>
     </div>
   </div>
 );
