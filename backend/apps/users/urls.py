@@ -1,7 +1,6 @@
-# backend/apps/users/urls.py
 from django.urls import path
-from .views import UserListView
+from .views import CurrentUserView
 
 urlpatterns = [
-    path('', UserListView.as_view(), name='user-list'),
+    path("me/", CurrentUserView.as_view(), name="current-user"),
 ]

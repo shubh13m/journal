@@ -1,13 +1,18 @@
-# backend/apps/users/views.py
-from rest_framework import generics
-from django.contrib.auth.models import User
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
+# apps/users/views.py
 from rest_framework.views import APIView
-from .serializers import UserSerializer
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import get_user_model
 
-class UserListView(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+User = get_user_model()
+
+class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({
+            "username": user.username,
+            "followers_count": user.followers.count(),
+            "following_count": user.following.count()
+        })

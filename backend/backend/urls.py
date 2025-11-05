@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/followers/', include('apps.followers.urls')),
     path('api/notifications/', include('apps.notifications.urls')),
     path('api-auth/', include('rest_framework.urls')),
+    path('api/followers/', include('apps.followers.urls')),
 ]
 
 
