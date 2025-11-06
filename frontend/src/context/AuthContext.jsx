@@ -16,15 +16,27 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = async (username, password) => {
-    const data = await loginUser(username, password);
-    if (data.access) {
-      localStorage.setItem("token", data.access);
-      localStorage.setItem("user", JSON.stringify({ username }));
-      setToken(data.access);
-      setUser({ username });
-      window.location.href = "/"; // redirect to homepage
-    } else {
-      throw new Error("Invalid login");
+    try {
+      const data = await loginUser(username, password);
+
+      if (data.token && data.user) {
+        const userData = {
+          id: data.user.id || data.user.user_id, // ✅ ensure ID is included
+          username: data.user.username,
+        };
+
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(userData));
+
+        setToken(data.token);
+        setUser(userData);
+
+        window.location.href = "/";
+      } else {
+        throw new Error("Invalid login");
+      }
+    } catch (err) {
+      throw err;
     }
   };
 

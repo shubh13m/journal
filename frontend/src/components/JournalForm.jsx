@@ -52,16 +52,17 @@ const JournalForm = ({ onSuccess }) => {
           onChange={(e) => setContent(e.target.value)}
           className="w-full border rounded-md p-2 h-28"
         />
-
         <select
           value={visibility}
           onChange={(e) => setVisibility(e.target.value)}
           className="border rounded-md p-2 w-full"
         >
-          <option value="PRIVATE">Private</option>
-          <option value="PUBLIC">Public</option>
-          <option value="SPECIFIC">Specific</option>
+          <option value="PUBLIC">Public 🌍</option>
+          <option value="PRIVATE">Private 🔒</option>
+          <option value="SPECIFIC">Specific 👥</option>
+          <option value="FRIENDS">Friends 🤝</option>  {/* <-- new */}
         </select>
+
 
         {visibility === "SPECIFIC" && (
           <div>

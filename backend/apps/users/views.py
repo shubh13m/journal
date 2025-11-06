@@ -12,7 +12,8 @@ class CurrentUserView(APIView):
     def get(self, request):
         user = request.user
         return Response({
+            "id": user.id,  # ✅ add this line
             "username": user.username,
             "followers_count": user.followers.count(),
-            "following_count": user.following.count()
+            "following_count": user.following.count(),
         })

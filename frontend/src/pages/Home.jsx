@@ -27,8 +27,14 @@ const Home = () => {
     loadData();
   }, [token]);
 
+  // Optimistic removal of FRIENDS journals if user unfollows
+  const handleUnfollow = (userId) => {
+    setJournals((prev) =>
+      prev.filter((j) => j.author.id !== userId || j.visibility !== "FRIENDS")
+    );
+  };
+
   return (
-    // ✅ Remove center prop here
     <Layout>
       <div className="w-full max-w-3xl mx-auto bg-white shadow p-6 rounded space-y-6">
         {/* Current user info */}
@@ -50,7 +56,13 @@ const Home = () => {
           {journals.length === 0 ? (
             <p className="text-gray-500 text-center">No journals yet.</p>
           ) : (
-            journals.map((j) => <JournalCard key={j.id} journal={j} />)
+            journals.map((j) => (
+              <JournalCard
+                key={j.id}
+                journal={j}
+                onUnfollow={handleUnfollow} // pass handler to JournalCard
+              />
+            ))
           )}
         </div>
       </div>

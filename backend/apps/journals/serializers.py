@@ -27,7 +27,7 @@ class JournalSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         user = getattr(request, 'user', None)
         shared = validated_data.pop('shared_with', [])
-        journal = Journal.objects.create(author=user, **validated_data)
+        journal = Journal.objects.create(**validated_data)
         if shared:
             journal.shared_with.set(shared)
         return journal

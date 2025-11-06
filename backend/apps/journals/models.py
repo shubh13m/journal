@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from apps.followers.models import Follow, is_mutual_follow 
 
 
 class Journal(models.Model):
@@ -7,6 +8,7 @@ class Journal(models.Model):
         ('PUBLIC', 'Public'),
         ('PRIVATE', 'Private'),
         ('SPECIFIC', 'Specific'),
+        ('FRIENDS', 'Friends'),  # <-- new option
     ]
 
     title = models.CharField(max_length=255)
@@ -31,4 +33,9 @@ class Journal(models.Model):
             return user == self.author
         if self.visibility == 'SPECIFIC':
             return user == self.author or user in self.shared_with.all()
+        if self.visibility == 'FRIENDS':
+            # author can always see
+            if user == self.author:
+                return True
+            return is_mutual_follow(self.author, user)  # <-- new logic
         return False
