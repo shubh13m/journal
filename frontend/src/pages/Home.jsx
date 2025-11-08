@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import React, { useEffect, useState } from "react";
 import { getJournals } from "../api/journals";
 import { getCurrentUser } from "../api/users";
@@ -14,14 +13,18 @@ const Home = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      const data = await getJournals();
-      setJournals(data);
+      try {
+        const data = await getJournals();
+        setJournals(data);
 
-      if (token) {
-        const userData = await getCurrentUser();
-        setCurrentUser(userData);
-      } else {
-        setCurrentUser(null);
+        if (token) {
+          const userData = await getCurrentUser();
+          setCurrentUser(userData);
+        } else {
+          setCurrentUser(null);
+        }
+      } catch (error) {
+        console.error("Error loading journals or user:", error);
       }
     };
     loadData();
@@ -48,7 +51,9 @@ const Home = () => {
 
         {/* Journal form */}
         {token && (
-          <JournalForm onSuccess={() => getJournals().then(setJournals)} />
+          <JournalForm
+            onSuccess={() => getJournals().then(setJournals).catch(console.error)}
+          />
         )}
 
         {/* Journal list */}
@@ -57,11 +62,7 @@ const Home = () => {
             <p className="text-gray-500 text-center">No journals yet.</p>
           ) : (
             journals.map((j) => (
-              <JournalCard
-                key={j.id}
-                journal={j}
-                onUnfollow={handleUnfollow} // pass handler to JournalCard
-              />
+              <JournalCard key={j.id} journal={j} onUnfollow={handleUnfollow} />
             ))
           )}
         </div>

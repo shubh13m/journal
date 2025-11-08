@@ -52,3 +52,42 @@ class JournalViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # Automatically set author as current user
         serializer.save(author=self.request.user)
+
+
+# New view to fetch journals by author applying visibility filtering
+class AuthorJournalListView(generics.ListAPIView):
+    serializer_class = JournalSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        username = self.kwargs.get('username')
+        try:
+            author = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Journal.objects.none()
+
+        user = self.request.user
+
+        if user.is_authenticated:
+            # Journals by author with visibility filtering
+            base_qs = Journal.objects.filter(
+                author=author
+            ).filter(
+                Q(visibility="PUBLIC") |
+                Q(author=user) |
+                Q(visibility="SPECIFIC", shared_with=user)
+            ).distinct().select_related('author').prefetch_related('shared_with')
+
+            # FRIENDS journals if mutual follow
+            friends_qs = Journal.objects.filter(
+                author=author,
+                visibility="FRIENDS"
+            ).select_related('author')
+
+            friends_qs = [j for j in friends_qs if is_mutual_follow(j.author, user)]
+
+            # Combine querysets
+            return list(base_qs) + friends_qs
+        else:
+            # Not logged in, only public journals by author
+            return Journal.objects.filter(author=author, visibility="PUBLIC").select_related('author')
